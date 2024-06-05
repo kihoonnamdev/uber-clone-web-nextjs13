@@ -59,7 +59,6 @@ function InputItem({ type }) {
         className="bg-transparent w-full outline-none"
       /> */}
       <GooglePlacesAutocomplete
-        apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
         selectProps={{
           value,
           onChange: (place) => {
