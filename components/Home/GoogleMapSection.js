@@ -33,10 +33,10 @@ function GoogleMapSection() {
     lng: -38.523,
   });
 
-  //   const { isLoaded } = useJsApiLoader({
-  //     id: "google-map-script",
-  //     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
-  //   });
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+  });
 
   const [map, setMap] = React.useState(null);
   const [directionRoutePoints, setDirectionRoutePoints] = useState([]);
@@ -53,7 +53,8 @@ function GoogleMapSection() {
       });
     }
 
-    if (source.length != [] && destination.length != []) {
+    //if (source.length != [] && destination.length != []) {
+    if (source.length != 0 && destination.length != 0) {
       directionRoute();
     }
   }, [source]);
@@ -66,7 +67,8 @@ function GoogleMapSection() {
       });
     }
 
-    if (source.length != [] && destination.length != []) {
+    //if (source.length != [] && destination.length != []) {
+    if (source.length != 0 && destination.length != 0) {
       directionRoute();
     }
   }, [destination]);
@@ -93,6 +95,7 @@ function GoogleMapSection() {
           setDirectionRoutePoints(result);
         } else {
           console.error("Error");
+          setDirectionRoutePoints([]);
         }
       }
     );
@@ -170,18 +173,20 @@ function GoogleMapSection() {
         </MarkerF>
       ) : null}
 
-      {directionRoutePoints && (
-        <DirectionsRenderer
-          directions={directionRoutePoints}
-          options={{
-            polylineOptions: {
-              strokeColor: "#000",
-              strokeWeight: 5,
-            },
-            suppressMarkers: true,
-          }}
-        />
-      )}
+      {directionRoutePoints &&
+        Array.isArray(directionRoutePoints.routes) &&
+        directionRoutePoints.routes.length > 0 && (
+          <DirectionsRenderer
+            directions={directionRoutePoints}
+            options={{
+              polylineOptions: {
+                strokeColor: "#000",
+                strokeWeight: 5,
+              },
+              suppressMarkers: true,
+            }}
+          />
+        )}
     </GoogleMap>
   );
 }
