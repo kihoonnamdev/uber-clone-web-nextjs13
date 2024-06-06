@@ -13,11 +13,13 @@ export default function Home() {
   const [source, setSource] = useState([]);
   const [destination, setDestination] = useState([]);
 
+  const libraries = ["places", "geometry"];
+
   return (
     <SourceContext.Provider value={{ source, setSource }}>
       <DestinationContext.Provider value={{ destination, setDestination }}>
         <LoadScript
-          libraries={["places"]}
+          libraries={libraries}
           googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
         >
           <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">

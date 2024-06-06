@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
+  DirectionsRenderer,
   GoogleMap,
   MarkerF,
   OverlayView,
@@ -12,7 +13,7 @@ import { DestinationContext } from "@/context/DestinationContext";
 function GoogleMapSection() {
   const [containerStyle, setContainerStyle] = useState({
     width: "100%",
-    height: "60vh",
+    height: window.innerWidth * 0.45,
   });
   //   const containerStyle = {
   //     width: "100%",
@@ -20,7 +21,7 @@ function GoogleMapSection() {
   //   };
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setContainerStyle({ width: "100%", height: window.innerWidth * 0.6 });
+      setContainerStyle({ width: "100%", height: window.innerWidth * 0.45 });
     }
   }, []);
 
@@ -38,6 +39,7 @@ function GoogleMapSection() {
   //   });
 
   const [map, setMap] = React.useState(null);
+  const [directionRoutePoints, setDirectionRoutePoints] = useState([]);
 
   useEffect(() => {
     if (source?.length != [] && map) {
@@ -50,6 +52,10 @@ function GoogleMapSection() {
         lng: source.lng,
       });
     }
+
+    if (source.length != [] && destination.length != []) {
+      directionRoute();
+    }
   }, [source]);
 
   useEffect(() => {
@@ -59,7 +65,45 @@ function GoogleMapSection() {
         lng: destination.lng,
       });
     }
+
+    if (source.length != [] && destination.length != []) {
+      directionRoute();
+    }
   }, [destination]);
+
+  const directionRoute = () => {
+    // DirectionsRenderer 인스턴스 생성
+    //var directionsRenderer = new google.maps.DirectionsRenderer();
+
+    // 지도에 DirectionsRenderer 설정
+    //directionsRenderer.setMap(map);
+
+    const DirectionsService = new google.maps.DirectionsService();
+    console.log("DIE");
+    DirectionsService.route(
+      {
+        origin: { lat: source.lat, lng: source.lng },
+        destination: { lat: destination.lat, lng: destination.lng },
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+          console.log(result);
+          //directionsRenderer.setDirections(result);
+          setDirectionRoutePoints(result);
+        } else {
+          console.error("Error");
+        }
+      }
+    );
+  };
+
+  //   useEffect(() => {
+  //     if (directionRoutePoints) {
+  //       // DirectionsRenderer가 올바르게 렌더링되도록 하기 위한 로직을 추가합니다.
+  //       setMap(map);
+  //     }
+  //   }, [directionRoutePoints]);
 
   const onLoad = React.useCallback(function callback(map) {
     // This is just an example of getting and using the map instance!!! don't just blindly copy!
@@ -98,7 +142,7 @@ function GoogleMapSection() {
             mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
           >
             <div className="p-2 bg-white font-bold inline-block">
-              <p className="text-black text-[16px]">{source.label}</p>
+              <p className="text-black text-[18px]">{source.label}</p>
             </div>
           </OverlayViewF>
         </MarkerF>
@@ -120,13 +164,24 @@ function GoogleMapSection() {
             mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
           >
             <div className="p-2 bg-white font-bold inline-block">
-              <p className="text-black text-[16px]">{destination.label}</p>
+              <p className="text-black text-[18px]">{destination.label}</p>
             </div>
           </OverlayViewF>
         </MarkerF>
       ) : null}
 
-      <></>
+      {directionRoutePoints && (
+        <DirectionsRenderer
+          directions={directionRoutePoints}
+          options={{
+            polylineOptions: {
+              strokeColor: "#000",
+              strokeWeight: 5,
+            },
+            suppressMarkers: true,
+          }}
+        />
+      )}
     </GoogleMap>
   );
 }
