@@ -30,9 +30,9 @@ function CarListOptions({ distance }) {
           <button
             className="p-3 bg-black text-white rounded-lg text-center"
             onClick={() =>
-              router
-                .push("/payment?amount=" + selectedCar.amount * distance)
-                .toFixed(2)
+              router.push(
+                "/payment?amount=" + (selectedCar.amount * distance).toFixed(2)
+              )
             }
           >
             Request {selectedCar.name}
